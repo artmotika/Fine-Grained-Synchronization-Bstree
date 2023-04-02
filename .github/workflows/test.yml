@@ -1,0 +1,39 @@
+name: CI
+on:
+  push:
+    branches:
+      - '*'
+jobs:
+  build-job:
+    name: Build Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: 'Start build job'
+        run: |
+          echo "Starting the build job."
+      - name: 'Checkout'
+        uses: actions/checkout@v2
+
+      - name: 'Setup Java'
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: 'Check Java Version'
+        run: |
+          java --version
+      - name: 'Run Tests'
+        run: |
+            ./gradlew test
+      - name: 'Publish Test Report'
+        if: always()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: 'test-report'
+          path: build/reports/tests/test/*
+      - name: 'Publish Test Coverage'
+        if: always()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: 'test-coverage-jacoco'
+          path: build/reports/jacoco/test/html/*
